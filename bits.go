@@ -61,6 +61,25 @@ func (self *Reader) Read(p []byte) (n int, err error) {
 	return
 }
 
+func (self *Reader) ReadBool() (b bool, err error) {
+	var bits64 uint64
+	if bits64, err = self.ReadBits64(1); err != nil {
+		return
+	}
+	if bits64 > 0 {
+		b = true
+	}
+	return
+}
+
+func (self *Reader) ByteAlign() {
+	rem := self.n % 8
+	if rem != 0 {
+		self.bits = self.bits >> uint(rem)
+		self.n -= rem
+	}
+}
+
 type Writer struct {
 	W    io.Writer
 	n    int
